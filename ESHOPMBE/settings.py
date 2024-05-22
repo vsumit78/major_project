@@ -25,7 +25,14 @@ SECRET_KEY = 'django-insecure-f9m)s8+n5xi0gs@d1o8546vwrnoiw+i#f#ijj(%z@-0(fg3!cz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ESHOPMBE/settings.py
+
+ALLOWED_HOSTS = [
+    'major-project-axoy.onrender.com',  # Add your Render domain here
+    'localhost',
+    '127.0.0.1'
+]
+
 
 
 # Application definition
