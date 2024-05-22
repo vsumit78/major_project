@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Recommendation</title>
+</head>
+<body>
+    <h2>House Recommendation</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if map_image_url %}
+        <h3>Recommended 2D Map:</h3>
+        <img src="{{ map_image_url }}" alt="2D Map">
+    {% endif %}
+</body>
+</html>
