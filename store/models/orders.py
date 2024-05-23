@@ -22,6 +22,9 @@ class Order(models.Model):
 
     date = models.DateField(default=datetime.datetime.today)
 
+    razorpay_order_id = models.CharField(max_length=100, null=True,blank= True)
+    razorpay_payment_id = models.CharField(max_length=100, null=True,blank= True)
+    razorpay_payment_signature = models.CharField(max_length=100, null=True,blank= True)
     status = models.BooleanField(default=False)
 
     def placeOrder(self):

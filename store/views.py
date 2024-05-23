@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from store.middlewares.auth import auth_middleware
 from django.utils.decorators import method_decorator
+import razorpay
 
 
 class Index(View):
@@ -243,6 +244,37 @@ class Cart(View):
         print(products)
         return render(request, 'cart.html', {'products': products})
 
+from django.conf import settings
+'''class Checkout(View):
+    def post(self, request):
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        customer = request.session.get('customer')
+        cart = request.session.get('cart')
+        products = Product.get_products_by_id(list(cart.keys()))
+        print(address, phone, customer, cart, products)
+        #client = razorpay.client(auth = (settings.razorpay_key_id ,settings.razorpay_key_secret))
+
+
+        for product in products:
+            order = Order(customer=Customer(id=customer), product=product, price=product.price, address=address,
+                          phone=phone, quantity=cart.get(str(product.id)))
+            order.save()
+        request.session['cart'] = {}
+        return redirect('cart')'''
+
+import razorpay
+from django.conf import settings
+from django.shortcuts import render, redirect
+from django.views import View
+from .templatetags.cart import total_cart_price
+
+from django.shortcuts import render, redirect
+from django.views import View
+
+import razorpay
+from django.conf import settings
+
 
 class Checkout(View):
     def post(self, request):
@@ -251,14 +283,75 @@ class Checkout(View):
         customer = request.session.get('customer')
         cart = request.session.get('cart')
         products = Product.get_products_by_id(list(cart.keys()))
-        print(address, phone, customer, cart, products)
+
+        total_amount = sum(product.price * cart.get(str(product.id)) for product in products)
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+        razorpay_order = client.order.create({
+            'amount': total_amount * 100,  # Convert to paise
+            'currency': 'INR',
+            'receipt': 'order_rcptid_11',
+            'payment_capture': '1'
+        })
+        print("****************")
+        print(razorpay_order)
+        print("*************")
+        context = {
+            'razorpay_order_id': razorpay_order['id'],
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
+            'amount': total_amount * 100,
+            'currency': 'INR',
+            'address': address,
+            'phone': phone,
+            'products': products,
+            'customer': customer
+        }
+
+        request.session['address'] = address
+        request.session['phone'] = phone
+        request.session['customer'] = customer
+        request.session['cart'] = cart
+
+        return render(request, 'cart.html', context)
+
+
+from django.shortcuts import render, redirect
+
+class PaymentSuccess(View):
+    def get(self, request):
+        payment_id = request.GET.get('payment_id')
+        order_id = request.GET.get('order_id')
+        signature = request.GET.get('signature')
+
+        address = request.session.get('address')
+        phone = request.session.get('phone')
+        customer = request.session.get('customer')
+        cart = request.session.get('cart')
+        products = Product.get_products_by_id(list(cart.keys()))
 
         for product in products:
-            order = Order(customer=Customer(id=customer), product=product, price=product.price, address=address,
-                          phone=phone, quantity=cart.get(str(product.id)))
+            order = Order(
+                customer=Customer(id=customer),
+                product=product,
+                price=product.price,
+                address=address,
+                phone=phone,
+                quantity=cart.get(str(product.id)),
+                razorpay_order_id=order_id,
+                razorpay_payment_id=payment_id,
+                razorpay_payment_signature=signature,
+                status=True
+            )
             order.save()
+
         request.session['cart'] = {}
-        return redirect('cart')
+        context = {
+            'payment_id': payment_id,
+            'order_id': order_id,
+        }
+        return render(request, 'payment_success.html', context)
+
 
 class OrderView(View):
     def get(self, request):
