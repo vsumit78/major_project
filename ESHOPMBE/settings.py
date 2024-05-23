@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-f9m)s8+n5xi0gs@d1o8546vwrnoiw+i#f#ijj(%z@-0(fg3!cz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ESHOPMBE/settings.py
 
