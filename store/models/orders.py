@@ -16,11 +16,11 @@ class Order(models.Model):
 
     price = models.IntegerField()
 
-    address = models.CharField(max_length=20,default="  ")
+    address = models.CharField(max_length=100,default="  ")
 
     phone = models.CharField(max_length=11,default="*********")
 
-    date = models.DateField(default=datetime.datetime.today)
+    date = models.DateField(default=datetime.date.today)
 
     razorpay_order_id = models.CharField(max_length=100, null=True,blank= True)
     razorpay_payment_id = models.CharField(max_length=100, null=True,blank= True)

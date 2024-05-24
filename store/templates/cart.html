@@ -94,7 +94,7 @@
   <script>
     var options = {
         "key":"rzp_test_Y9VenE8cBPhcyb", // This should be passed from your Django context
-        "amount": "{{ razorpay_order.amount }}", // This should be passed from your Django context
+        "amount": "{{products|total_cart_price:request.session.cart|multiply:100}}", // This should be passed from your Django context
         "currency": "INR", // This should be passed from your Django context
         "name": "CONSTRUCT EASE",
         "description": "PAYMENT",
@@ -102,8 +102,7 @@
         "order_id": "{{ razorpay_order.id }}", // Pass the `id` obtained in the response of Step 1
         "handler": function (response){
             // Handle the response here
-            window.location.href = "payment_success.html?payment_id=" + response.razorpay_payment_id + "&order_id=" + response.razorpay_order_id + "&signature=" + response.razorpay_signature;
-        },
+              window.location.href = "/payment_success/?payment_id=" + response.razorpay_payment_id + "&order_id=" + response.razorpay_order_id + "&signature=" + response.razorpay_signature;},
         "theme": {
             "color": "#3399cc"
         }

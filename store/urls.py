@@ -3,7 +3,7 @@ from .views import Index, Signup, builder_recommendation, estimate_cost, Login, 
 from .middlewares.auth import auth_middleware
 urlpatterns = [
     path('', Index.as_view(), name='homepage'),
-    path('signup',Signup.as_view(),name='signup'),
+    path('signup/',Signup.as_view(),name='signup'),
     path('builder_recommendation', builder_recommendation, name='builder_recommendation'),
     path('estimate_cost', estimate_cost, name='estimate_cost'),
     path('house_recommendation', house_recommendation, name='house_recommendation'),
