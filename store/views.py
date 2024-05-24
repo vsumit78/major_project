@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from store.middlewares.auth import auth_middleware
 from django.utils.decorators import method_decorator
-import razorpay
 
 
 class Index(View):
